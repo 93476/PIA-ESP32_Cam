@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PIA Monitor</string>
+    <string name="app_subtitle">Protección Infantil Automotriz</string>
+    <string name="connection_waiting">Comprobando conexión…</string>
+    <string name="camera_title">Cámara en vivo</string>
+    <string name="camera_reload">Recargar cámara</string>
+    <string name="status_title">Monitoreo del vehículo</string>
+    <string name="send_sms">Enviar SMS</string>
+    <string name="call">Llamar</string>
+    <string name="reset_alerts">Reiniciar alertas</string>
+    <string name="settings">Configuración</string>
+    <string name="settings_title">Configuración de dispositivos</string>
+    <string name="pia_url_hint">URL del ESP32 PIA</string>
+    <string name="camera_url_hint">URL de la ESP32-CAM</string>
+    <string name="phone_hint">Teléfono de emergencia (opcional)</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+</resources>
