@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PIAMonitor" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pia_primary</item>
+        <item name="colorPrimaryVariant">@color/pia_primary_dark</item>
+        <item name="colorSecondary">@color/pia_secondary</item>
+        <item name="android:statusBarColor">@color/pia_primary_dark</item>
+        <item name="android:navigationBarColor">@color/pia_surface</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@color/pia_background</item>
+    </style>
+</resources>
