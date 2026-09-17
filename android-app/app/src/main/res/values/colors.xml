@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pia_primary">#00695C</color>
+    <color name="pia_primary_dark">#004D40</color>
+    <color name="pia_secondary">#0277BD</color>
+    <color name="pia_background">#F4F7F8</color>
+    <color name="pia_surface">#FFFFFF</color>
+    <color name="pia_text">#17212B</color>
+    <color name="pia_muted">#5F6B76</color>
+    <color name="pia_success">#2E7D32</color>
+    <color name="pia_warning">#EF6C00</color>
+    <color name="pia_danger">#C62828</color>
+</resources>
