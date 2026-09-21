@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val statusRequestInFlight = AtomicBoolean(false)
 
+    private lateinit var btnTabMonitor: MaterialButton
+    private lateinit var btnTabCamera: MaterialButton
+    private lateinit var monitorContainer: android.view.View
+    private lateinit var cameraContainer: android.view.View
     private lateinit var tvPiaConnection: TextView
     private lateinit var tvCameraConnection: TextView
     private lateinit var webCamera: WebView
@@ -61,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         bindViews()
         configureButtons()
         configureCameraWebView()
-        loadCamera()
+        showTab(camera = false)
     }
 
     override fun onStart() {
@@ -84,6 +88,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindViews() {
+        btnTabMonitor = findViewById(R.id.btnTabMonitor)
+        btnTabCamera = findViewById(R.id.btnTabCamera)
+        monitorContainer = findViewById(R.id.monitorContainer)
+        cameraContainer = findViewById(R.id.cameraContainer)
         tvPiaConnection = findViewById(R.id.tvPiaConnection)
         tvCameraConnection = findViewById(R.id.tvCameraConnection)
         webCamera = findViewById(R.id.webCamera)
@@ -101,6 +109,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureButtons() {
+        btnTabMonitor.setOnClickListener { showTab(camera = false) }
+        btnTabCamera.setOnClickListener { showTab(camera = true) }
+
         findViewById<MaterialButton>(R.id.btnReloadCamera).setOnClickListener {
             loadCamera()
         }
@@ -124,6 +135,14 @@ class MainActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnSettings).setOnClickListener {
             showSettingsDialog()
         }
+    }
+
+    private fun showTab(camera: Boolean) {
+        monitorContainer.visibility = if (camera) android.view.View.GONE else android.view.View.VISIBLE
+        cameraContainer.visibility = if (camera) android.view.View.VISIBLE else android.view.View.GONE
+        btnTabMonitor.isEnabled = camera
+        btnTabCamera.isEnabled = !camera
+        if (camera) loadCamera()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
