@@ -159,7 +159,10 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     private fun configureCameraWebView() {
         webCamera.setBackgroundColor(Color.BLACK)
-        webCamera.settings.javaScriptEnabled = false
+        webCamera.settings.javaScriptEnabled = true
+        webCamera.settings.domStorageEnabled = true
+        webCamera.settings.mediaPlaybackRequiresUserGesture = false
+        webCamera.settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         webCamera.settings.loadsImagesAutomatically = true
         webCamera.settings.cacheMode = android.webkit.WebSettings.LOAD_NO_CACHE
 
@@ -170,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                 error: android.webkit.WebResourceError?
             ) {
                 super.onReceivedError(view, request, error)
-                if (request?.url?.toString()?.contains("/stream") == true) {
+                if (request?.isForMainFrame == true) {
                     markCameraDisconnected()
                 }
             }
@@ -179,40 +182,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadCamera() {
         val cameraBaseUrl = DeviceUrls.normalizeBaseUrl(preferences.cameraBaseUrl)
-        val streamUrl = DeviceUrls.streamUrl(cameraBaseUrl)
-        val safeStreamUrl = streamUrl
-            .replace("&", "&amp;")
-            .replace("\"", "&quot;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-
         tvCameraConnection.text = "Cámara: comprobando…"
         tvCameraConnection.setTextColor(color(R.color.pia_muted))
 
-        val html = """
-            <!doctype html>
-            <html>
-              <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-                <style>
-                  html, body { margin:0; padding:0; width:100%; height:100%; background:#101010; overflow:hidden; }
-                  body { display:flex; align-items:center; justify-content:center; }
-                  img { width:100%; height:100%; object-fit:contain; }
-                </style>
-              </head>
-              <body>
-                <img src="$safeStreamUrl" alt="ESP32-CAM">
-              </body>
-            </html>
-        """.trimIndent()
-
-        webCamera.loadDataWithBaseURL(
-            "$cameraBaseUrl/",
-            html,
-            "text/html",
-            "UTF-8",
-            null
-        )
+        // Cargamos exactamente la misma página HTTP que funciona en Chrome.
+        // Esto evita envolver el MJPEG en otro documento HTML, algo que algunos
+        // Android System WebView no manejan bien con streams multipart.
+        webCamera.stopLoading()
+        webCamera.clearCache(true)
+        webCamera.loadUrl(DeviceUrls.streamUrl(cameraBaseUrl))
 
         probeCamera(cameraBaseUrl)
     }
