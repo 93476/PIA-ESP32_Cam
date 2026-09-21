@@ -116,6 +116,10 @@ class MainActivity : AppCompatActivity() {
             loadCamera()
         }
 
+        findViewById<MaterialButton>(R.id.btnCameraSettings).setOnClickListener {
+            showSettingsDialog()
+        }
+
         findViewById<MaterialButton>(R.id.btnSendSms).setOnClickListener {
             executeCommand(
                 action = "sms",
