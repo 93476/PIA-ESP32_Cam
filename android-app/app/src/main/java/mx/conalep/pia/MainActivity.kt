@@ -2,6 +2,7 @@ package mx.conalep.pia
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -114,6 +115,12 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<MaterialButton>(R.id.btnReloadCamera).setOnClickListener {
             loadCamera()
+        }
+
+        findViewById<MaterialButton>(R.id.btnOpenCameraBrowser).setOnClickListener {
+            val url = DeviceUrls.streamUrl(preferences.cameraBaseUrl)
+            runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+                .onFailure { Toast.makeText(this, "No se pudo abrir el navegador", Toast.LENGTH_LONG).show() }
         }
 
         findViewById<MaterialButton>(R.id.btnCameraSettings).setOnClickListener {
