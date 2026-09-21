@@ -30,12 +30,14 @@ jobs:
           gradle-version: '8.9'
 
       - name: Run unit tests and build debug APK
-        run: gradle -p android-app testDebugUnitTest assembleDebug --stacktrace
+        run: |-
+          gradle -p android-app testDebugUnitTest assembleDebug --stacktrace
+          cp android-app/app/build/outputs/apk/debug/app-debug.apk android-app/app/build/outputs/apk/debug/pia_cam_v1.apk
 
       - name: Upload debug APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: PIA-Monitor-debug-apk
-          path: android-app/app/build/outputs/apk/debug/app-debug.apk
+          name: pia_cam_v1
+          path: android-app/app/build/outputs/apk/debug/pia_cam_v1.apk
           if-no-files-found: error
