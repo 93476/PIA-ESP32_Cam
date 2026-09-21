@@ -141,6 +141,9 @@
                     <com.google.android.material.button.MaterialButton android:id="@+id/btnReloadCamera"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:layout_marginTop="10dp" android:text="@string/camera_reload"/>
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btnOpenCameraBrowser"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" android:text="Abrir cámara en navegador"/>
                     <com.google.android.material.button.MaterialButton android:id="@+id/btnCameraSettings"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
