@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PIA Monitor</string>
+    <string name="app_name">PIA CAM</string>
     <string name="app_subtitle">Protección Infantil Automotriz</string>
     <string name="connection_waiting">Comprobando conexión…</string>
     <string name="camera_title">Cámara en vivo</string>

@@ -8,7 +8,8 @@ object DeviceUrls {
 
     fun statusUrl(baseUrl: String): String = "${normalizeBaseUrl(baseUrl)}/api/status"
 
-    fun streamUrl(baseUrl: String): String = "${normalizeBaseUrl(baseUrl)}/stream"
+    // El firmware ESP32-CAM del proyecto publica el MJPEG directamente en "/".
+    fun streamUrl(baseUrl: String): String = "${normalizeBaseUrl(baseUrl)}/"
 
     fun commandUrl(
         baseUrl: String,

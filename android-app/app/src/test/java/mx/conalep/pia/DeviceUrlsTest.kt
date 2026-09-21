@@ -33,7 +33,7 @@ class DeviceUrlsTest {
     @Test
     fun streamUrl_buildsExpectedCameraEndpoint() {
         assertEquals(
-            "http://192.168.4.2/stream",
+            "http://192.168.4.2/",
             DeviceUrls.streamUrl("http://192.168.4.2/")
         )
     }

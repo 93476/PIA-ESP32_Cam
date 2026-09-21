@@ -25,7 +25,7 @@ class AppPreferences(context: Context) {
 
     companion object {
         const val DEFAULT_PIA_URL = "http://192.168.4.1"
-        const val DEFAULT_CAMERA_URL = "http://192.168.4.2"
+        const val DEFAULT_CAMERA_URL = "http://192.168.137.128"
 
         private const val PREFS_NAME = "pia_monitor_settings"
         private const val KEY_PIA_URL = "pia_base_url"

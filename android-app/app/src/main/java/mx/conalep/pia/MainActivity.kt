@@ -2,6 +2,7 @@ package mx.conalep.pia
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -31,6 +32,10 @@ class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val statusRequestInFlight = AtomicBoolean(false)
 
+    private lateinit var btnTabMonitor: MaterialButton
+    private lateinit var btnTabCamera: MaterialButton
+    private lateinit var monitorContainer: android.view.View
+    private lateinit var cameraContainer: android.view.View
     private lateinit var tvPiaConnection: TextView
     private lateinit var tvCameraConnection: TextView
     private lateinit var webCamera: WebView
@@ -61,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         bindViews()
         configureButtons()
         configureCameraWebView()
-        loadCamera()
+        showTab(camera = false)
     }
 
     override fun onStart() {
@@ -84,6 +89,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindViews() {
+        btnTabMonitor = findViewById(R.id.btnTabMonitor)
+        btnTabCamera = findViewById(R.id.btnTabCamera)
+        monitorContainer = findViewById(R.id.monitorContainer)
+        cameraContainer = findViewById(R.id.cameraContainer)
         tvPiaConnection = findViewById(R.id.tvPiaConnection)
         tvCameraConnection = findViewById(R.id.tvCameraConnection)
         webCamera = findViewById(R.id.webCamera)
@@ -101,8 +110,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureButtons() {
+        btnTabMonitor.setOnClickListener { showTab(camera = false) }
+        btnTabCamera.setOnClickListener { showTab(camera = true) }
+
         findViewById<MaterialButton>(R.id.btnReloadCamera).setOnClickListener {
             loadCamera()
+        }
+
+        findViewById<MaterialButton>(R.id.btnOpenCameraBrowser).setOnClickListener {
+            val url = DeviceUrls.streamUrl(preferences.cameraBaseUrl)
+            runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+                .onFailure { Toast.makeText(this, "No se pudo abrir el navegador", Toast.LENGTH_LONG).show() }
+        }
+
+        findViewById<MaterialButton>(R.id.btnCameraSettings).setOnClickListener {
+            showSettingsDialog()
         }
 
         findViewById<MaterialButton>(R.id.btnSendSms).setOnClickListener {
@@ -126,10 +148,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showTab(camera: Boolean) {
+        monitorContainer.visibility = if (camera) android.view.View.GONE else android.view.View.VISIBLE
+        cameraContainer.visibility = if (camera) android.view.View.VISIBLE else android.view.View.GONE
+        btnTabMonitor.isEnabled = camera
+        btnTabCamera.isEnabled = !camera
+        if (camera) loadCamera()
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun configureCameraWebView() {
         webCamera.setBackgroundColor(Color.BLACK)
-        webCamera.settings.javaScriptEnabled = false
+        webCamera.settings.javaScriptEnabled = true
+        webCamera.settings.domStorageEnabled = true
+        webCamera.settings.mediaPlaybackRequiresUserGesture = false
+        webCamera.settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         webCamera.settings.loadsImagesAutomatically = true
         webCamera.settings.cacheMode = android.webkit.WebSettings.LOAD_NO_CACHE
 
@@ -140,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                 error: android.webkit.WebResourceError?
             ) {
                 super.onReceivedError(view, request, error)
-                if (request?.url?.toString()?.contains("/stream") == true) {
+                if (request?.isForMainFrame == true) {
                     markCameraDisconnected()
                 }
             }
@@ -149,40 +182,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadCamera() {
         val cameraBaseUrl = DeviceUrls.normalizeBaseUrl(preferences.cameraBaseUrl)
-        val streamUrl = DeviceUrls.streamUrl(cameraBaseUrl)
-        val safeStreamUrl = streamUrl
-            .replace("&", "&amp;")
-            .replace("\"", "&quot;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-
         tvCameraConnection.text = "Cámara: comprobando…"
         tvCameraConnection.setTextColor(color(R.color.pia_muted))
 
-        val html = """
-            <!doctype html>
-            <html>
-              <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-                <style>
-                  html, body { margin:0; padding:0; width:100%; height:100%; background:#101010; overflow:hidden; }
-                  body { display:flex; align-items:center; justify-content:center; }
-                  img { width:100%; height:100%; object-fit:contain; }
-                </style>
-              </head>
-              <body>
-                <img src="$safeStreamUrl" alt="ESP32-CAM">
-              </body>
-            </html>
-        """.trimIndent()
-
-        webCamera.loadDataWithBaseURL(
-            "$cameraBaseUrl/",
-            html,
-            "text/html",
-            "UTF-8",
-            null
-        )
+        // Cargamos exactamente la misma página HTTP que funciona en Chrome.
+        // Esto evita envolver el MJPEG en otro documento HTML, algo que algunos
+        // Android System WebView no manejan bien con streams multipart.
+        webCamera.stopLoading()
+        webCamera.clearCache(true)
+        webCamera.loadUrl(DeviceUrls.streamUrl(cameraBaseUrl))
 
         probeCamera(cameraBaseUrl)
     }
